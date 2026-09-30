@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cropper M+</title>
+
+<link rel="stylesheet" href="./assets/css/fonts.css" />
+<link rel="stylesheet" href="./assets/css/tokens.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<link rel="stylesheet" href="./assets/css/portada.css" />
+<link rel="stylesheet" href="./assets/css/modal.css" />
+<link rel="stylesheet" href="./assets/css/app.css" />
+<link rel="stylesheet" href="./assets/css/actores.css" />
+
+<script src="./assets/js/vendor/jszip.min.js"></script>
+</head>
+<body>
+
+<!-- ============================================================
+     VISTA 1 — PORTADA
+============================================================ -->
+<section id="portada" class="vista portada">
+
+  <header class="marca">
+    <img class="marca-logo" src="./assets/img/cabecera_cropper.svg" alt="Cropper M+" />
+  </header>
+
+  <main class="portada-cuerpo">
+    <h1 class="portada-titulo">Selecciona el tipo de recorte</h1>
+
+    <ul class="modos">
+      <li>
+        <button class="modo" type="button" data-modo="caratulas-jugadores">
+          <span class="modo-icono">
+            <!-- Incrustado a propósito: como máscara de CSS el navegador lo pide
+                 como recurso aparte, y la CSP corporativa podría rechazarlo.
+                 Así no hay petición que bloquear. El color lo pone `currentColor`,
+                 de ahí que el hover lo recoloree igual que al borde.
+                 Fuente: assets/img/ic_recorte_01.svg -->
+            <svg class="modo-glifo" viewBox="0 0 115 115" aria-hidden="true" focusable="false">
+              <clipPath id="recorteJugadores"><rect width="115" height="115" rx="8.04"/></clipPath>
+              <g clip-path="url(#recorteJugadores)">
+                <circle cx="57.47" cy="27.28" r="15.12"/>
+                <path d="M83.33,128.66c2.6-1.76,4.31-4.73,4.31-8.11v-52.18c0-10.14-8.22-18.36-18.36-18.36h-11.76s-.06,0-.06,0h-11.76c-10.14,0-18.36,8.22-18.36,18.36v52.18c0,3.37,1.71,6.35,4.31,8.11"/>
+                <path d="M74.62,83.51v97.46c0,2.71-2.19,4.9-4.9,4.9h-24.67c-2.71,0-4.9-2.19-4.9-4.9v-97.46"/>
+                <line x1="57.39" y1="122.2" x2="57.39" y2="185.87"/>
+              </g>
+            </svg>
+          </span>
+          <span class="modo-nombre">CARÁTULAS<br />JUGADORES</span>
+        </button>
+      </li>
+      <li>
+        <button class="modo" type="button" data-modo="actores-800">
+          <span class="modo-icono">
+            <!-- Fuente: assets/img/ic_recorte_02.svg (sin los dos trazos que
+                 quedaban fuera del recorte y no se veían). -->
+            <svg class="modo-glifo" viewBox="0 0 115 115" aria-hidden="true" focusable="false">
+              <clipPath id="recorteActores"><rect width="115" height="115" rx="10.23"/></clipPath>
+              <g clip-path="url(#recorteActores)">
+                <circle cx="57.45" cy="38.62" r="26.27"/>
+                <path d="M102.39,214.81c4.52-3.05,7.49-8.22,7.49-14.09v-90.68c0-17.62-14.28-31.9-31.9-31.9h-20.43s-.11,0-.11,0h-20.43c-17.62,0-31.9,14.28-31.9,31.9v90.68c0,5.86,2.97,11.03,7.49,14.09"/>
+              </g>
+            </svg>
+          </span>
+          <span class="modo-nombre">ACTORES<br />800x800</span>
+        </button>
+      </li>
+    </ul>
+  </main>
+
+  <footer class="portada-pie">PRODUCCIÓN M+, 2026</footer>
+</section>
+
+
+<!-- ============================================================
+     VISTA 2 — HERRAMIENTA (modo carátulas de jugadores)
+============================================================ -->
+<section id="app" class="vista" hidden>
+
+  <header class="marca">
+    <img class="marca-logo" src="./assets/img/cabecera_cropper.svg" alt="Cropper M+" />
+  </header>
+
+  <div class="acciones">
+    <div class="acciones-izq">
+      <label for="target">DISTANCIA OBJETIVO PUPILAS (px):</label>
+      <input id="target" type="number" value="195" min="1" step="1" />
+
+      <button id="volverPortada" class="btn">PORTADA</button>
+      <button id="clearAll" class="btn">REINICIAR PROYECTO</button>
+
+      <button id="exportCsv" class="btn export" style="display:none;">EXPORTAR CSV</button>
+      <button id="exportZip" class="btn export" style="display:none;">RECORTAR IMÁGENES (1945x2200)</button>
+      <button id="exportScale" class="btn export" style="display:none;">ESCALAR IMÁGENES</button>
+
+      <span id="exportProg" class="export-progress" style="display:none;">
+        <span class="export-bar"><span id="exportFill"></span></span>
+        <span id="exportTxt" class="export-text">0%</span>
+      </span>
+    </div>
+
+    <div class="acciones-der">
+      <button id="prev" class="btn">ANTERIOR</button>
+      <button id="next" class="btn">SIGUIENTE</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside>
+      <div class="dropzone" id="drop">
+        <input id="fileInput" type="file" accept="image/*" multiple />
+        <div class="title">Arrastra aquí las imágenes</div>
+        <div class="hint">o haz click para seleccionarlas.</div>
+      </div>
+
+      <div class="progress" id="progressBox" style="display:none;">
+        <div class="bar"><span id="progressFill"></span></div>
+        <div class="nums">
+          <span id="phaseMsg" class="mdl">Cargando imágenes…</span>
+          <span id="progressNum">0 / 0</span> —
+          <span id="progressPct">0%</span>
+          <span class="mdl" id="mdlMsg" style="display:none;">Cargando modelo…</span>
+          <span class="eyes" id="progressEyes" style="display:none;">Ojos: 0 / 0</span>
+          <span class="err" id="errMsg" style="display:none;"></span>
+        </div>
+        <div class="actions">
+          <button id="cancelDetect" class="btn">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="thumb-list" id="list"></div>
+    </aside>
+
+    <main>
+      <div class="viewer">
+        <canvas id="stage" width="1600" height="900"></canvas>
+      </div>
+
+      <div class="toolbar">
+        <div class="group">
+          <button id="clearPts" class="btn">BORRAR PUNTOS</button>
+          <button id="fit" class="btn">AJUSTAR IMAGEN</button>
+          <button id="resetView" class="btn">VISTA 100%</button>
+        </div>
+        <div class="group zoom">
+          <span class="zoom-label">ZOOM</span>
+          <button id="zoomOut" class="btn-icono" aria-label="Alejar">−</button>
+          <button id="zoomIn" class="btn-icono" aria-label="Acercar">+</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- ============================================================
+     VISTA 3 — HERRAMIENTA (modo actores 800x800)
+
+     Paso 1: carga, detección, lista y navegación. El panel de la derecha
+     está montado pero inerte — controles y previews llegan en su paso.
+============================================================ -->
+<section id="app-actores" class="vista" hidden>
+
+  <header class="marca">
+    <img class="marca-logo" src="./assets/img/cabecera_cropper.svg" alt="Cropper M+" />
+  </header>
+
+  <div class="acciones">
+    <div class="acciones-izq">
+      <!-- Tres bloques separados: salir del proyecto · cómo se mira · sacarlo -->
+      <button id="acPortada" class="btn">PORTADA</button>
+      <button id="acReiniciar" class="btn">REINICIAR PROYECTO</button>
+
+      <span class="ac-separador"></span>
+
+      <!-- Excluyentes: una para trabajar de una en una, otra para verlas todas -->
+      <button id="acEdicion" class="btn activo">EDICIÓN</button>
+      <button id="acVerTodo" class="btn">VER TODO</button>
+
+      <span class="ac-separador"></span>
+
+      <button id="acExportar" class="btn export" disabled>EXPORTAR RECORTES</button>
+
+      <span id="acExportProg" class="export-progress" style="display:none;">
+        <span class="export-bar"><span id="acExportFill"></span></span>
+        <span id="acExportTxt" class="export-text">0%</span>
+        <button id="acExportCancelar" class="btn">CANCELAR</button>
+      </span>
+    </div>
+
+    <div class="acciones-der">
+      <button id="acPrev" class="btn">ANTERIOR</button>
+      <button id="acNext" class="btn">SIGUIENTE</button>
+    </div>
+  </div>
+
+  <div class="layout" id="acLayout">
+    <aside>
+      <div class="dropzone" id="acDrop">
+        <input id="acFileInput" type="file" accept="image/*" multiple />
+        <div class="title">Arrastra aquí las imágenes</div>
+        <div class="hint">o haz click para seleccionarlas.</div>
+      </div>
+
+      <div class="progress" id="acProgressBox" style="display:none;">
+        <div class="bar"><span id="acProgressFill"></span></div>
+        <div class="nums">
+          <span id="acPhaseMsg" class="mdl">Cargando imágenes…</span>
+          <span id="acProgressNum">0 / 0</span> —
+          <span id="acProgressPct">0%</span>
+          <span class="mdl" id="acMdlMsg" style="display:none;">Cargando modelo…</span>
+          <span class="eyes" id="acProgressEyes" style="display:none;">Ojos: 0 / 0</span>
+          <span class="err" id="acErrMsg" style="display:none;"></span>
+        </div>
+        <div class="actions">
+          <button id="acCancelar" class="btn">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Ninguna imagen se pierde en silencio: las que fallan se enumeran -->
+      <div class="ac-avisos" id="acDescartes" style="display:none;">
+        <div id="acDescartesTxt"></div>
+      </div>
+
+      <div class="thumb-list" id="acLista"></div>
+    </aside>
+
+    <!-- Rejilla de dos columnas por dos filas: arriba el original y los
+         previews; abajo, una barra para cada uno, alineada con su columna. -->
+    <main>
+      <div class="viewer">
+        <canvas id="acStage" width="1600" height="900"></canvas>
+      </div>
+
+      <div class="ac-panel">
+        <div class="ac-previews">
+          <figure class="ac-preview">
+            <canvas id="acPreviewCuadrado" width="800" height="800"></canvas>
+            <!-- En mayúsculas escritas a mano, no con text-transform: eso
+                 convertiría la equis de 800x800 en 800X800. -->
+            <figcaption>800x800 CUADRADO</figcaption>
+          </figure>
+
+          <figure class="ac-preview ac-preview--redondo">
+            <canvas id="acPreviewRedondo" width="800" height="800"></canvas>
+            <figcaption>800x800 + MÁSCARA</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Barra del visor: todo lo de aquí actúa sobre el original -->
+      <div class="toolbar ac-barra">
+        <div class="group">
+          <button id="acAjustar" class="btn" title="Encaja la imagen entera en el visor">AJUSTAR</button>
+          <button id="acVista100" class="btn" title="Ver la imagen a tamaño real">100%</button>
+        </div>
+        <div class="group zoom">
+          <span class="zoom-label">ZOOM</span>
+          <button id="acZoomOut" class="btn-icono" aria-label="Alejar">−</button>
+          <button id="acZoomIn" class="btn-icono" aria-label="Acercar">+</button>
+        </div>
+        <div class="group">
+          <button id="acLimpiar" class="btn" title="Borra las pupilas y la barbilla de esta imagen">LIMPIAR</button>
+        </div>
+      </div>
+
+      <!-- Barra del encuadre: todo lo de aquí actúa sobre los previews -->
+      <div class="toolbar ac-barra ac-barra--encuadre">
+        <div class="ac-mando">
+          <span class="ac-rotulo">POSICIÓN</span>
+          <div class="ac-flechas">
+            <button id="acIzquierda" class="btn-icono" aria-label="Mover a la izquierda">←</button>
+            <button id="acArriba"    class="btn-icono" aria-label="Subir">↑</button>
+            <button id="acAbajo"     class="btn-icono" aria-label="Bajar">↓</button>
+            <button id="acDerecha"   class="btn-icono" aria-label="Mover a la derecha">→</button>
+          </div>
+        </div>
+
+        <div class="ac-mando">
+          <span class="ac-rotulo">ESCALA</span>
+          <div class="ac-par">
+            <button id="acMenos" class="btn-icono" aria-label="Reducir">−</button>
+            <button id="acMas"   class="btn-icono" aria-label="Ampliar">+</button>
+          </div>
+        </div>
+
+        <div class="ac-mando">
+          <span class="ac-rotulo">GIRO</span>
+          <div class="ac-par">
+            <button id="acGiroIzq" class="btn-icono" aria-label="Girar a la izquierda">↺</button>
+            <button id="acGiroDch" class="btn-icono" aria-label="Girar a la derecha">↻</button>
+          </div>
+        </div>
+
+        <!-- Lo de la derecha no transforma nada: uno es vista, el otro deshace -->
+        <span class="ac-separador"></span>
+
+        <div class="ac-mando">
+          <span class="ac-rotulo">GUÍAS</span>
+          <label class="ac-switch">
+            <input type="checkbox" id="acGuias" checked />
+            <span class="ac-switch-pista"></span>
+          </label>
+        </div>
+
+        <button id="acReset" class="btn">RESET</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- VER TODO — ocupa la ventana entera: aquí el original y los puntos sobran -->
+  <section class="ac-revision" id="acRevision" hidden>
+    <div class="ac-revision-barra">
+      <button id="acFormaCuadrado" class="ac-forma activo" type="button" aria-label="Ver los recortes en cuadrado">
+        <span class="ac-forma-glifo"></span>
+      </button>
+      <button id="acFormaCirculo" class="ac-forma ac-forma--circulo" type="button" aria-label="Ver los recortes con la máscara redonda">
+        <span class="ac-forma-glifo"></span>
+      </button>
+      <span class="ac-revision-cuenta" id="acRevisionCuenta"></span>
+    </div>
+
+    <div class="ac-parrilla" id="acParrilla"></div>
+  </section>
+</section>
+
+<!-- ============================================================
+     MODAL — IDs que no se han encontrado (modo actores)
+
+     La compartida sólo sabe preguntar sí o no; ésta tiene que enseñar una
+     lista y dejar teclear. Aquí vive también la carga de un CSV propio, que
+     antes era un botón suelto en la barra: es donde de verdad hace falta.
+============================================================ -->
+<dialog id="acModalIds" class="modal">
+  <div class="modal-caja ac-caja-ids">
+    <h2 class="modal-titulo">Faltan IDs</h2>
+    <p class="modal-texto" id="acIdsTexto"></p>
+
+    <div class="ac-ids-lista" id="acIdsLista"></div>
+
+    <div class="modal-acciones ac-ids-acciones">
+      <button type="button" id="acIdsCargarCsv" class="modal-btn modal-btn--ghost">CARGAR OTRO CSV</button>
+      <input type="file" id="acIdsCsvInput" accept=".csv,text/csv,text/plain" hidden />
+      <span class="ac-ids-relleno"></span>
+      <button type="button" id="acIdsCancelar" class="modal-btn modal-btn--ghost">CANCELAR</button>
+      <button type="button" id="acIdsSeguir"   class="modal-btn modal-btn--ok">EXPORTAR</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ============================================================
+     MODAL DE CONFIRMACIÓN (compartida)
+============================================================ -->
+<dialog id="modal" class="modal">
+  <form method="dialog" class="modal-caja">
+    <h2 class="modal-titulo" id="modalTitulo"></h2>
+    <p class="modal-texto" id="modalTexto"></p>
+    <div class="modal-acciones">
+      <button type="submit" value="cancelar" class="modal-btn modal-btn--ghost" id="modalCancelar">CANCELAR</button>
+      <button type="submit" value="aceptar"  class="modal-btn modal-btn--ok"    id="modalAceptar">ACEPTAR</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="./assets/js/main.js"></script>
+</body>
+</html>

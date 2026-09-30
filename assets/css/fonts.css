@@ -1,0 +1,43 @@
+/* ================================
+   Aperçu — tipografía de marca M+
+================================ */
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_light_movistar-web.woff') format('woff');
+  font-weight:300; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_light_italic_movistar-web.woff') format('woff');
+  font-weight:300; font-style:italic; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_regular_movistar-web.woff') format('woff');
+  font-weight:400; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_regular_italic_movistar-web.woff') format('woff');
+  font-weight:400; font-style:italic; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_bold_movistar-web.woff') format('woff');
+  font-weight:700; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_bold_italic_movistar-web.woff') format('woff');
+  font-weight:700; font-style:italic; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_black_movistar-web.woff') format('woff');
+  font-weight:900; font-style:normal; font-display:swap;
+}
+@font-face{
+  font-family:'Apercu';
+  src:url('../fonts/apercu_black_italic_movistar-web.woff') format('woff');
+  font-weight:900; font-style:italic; font-display:swap;
+}

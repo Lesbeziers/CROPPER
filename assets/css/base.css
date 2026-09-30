@@ -1,0 +1,32 @@
+/* ================================
+   BASE — reset, vistas y cabecera de marca
+   (lo que comparten portada y herramienta)
+================================ */
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  background:var(--mp-negro);
+  color:var(--mp-blanco);
+  font-family:var(--mp-fuente);
+  font-size:14px;line-height:1.3;
+  display:flex;flex-direction:column;
+}
+
+/* ---- Vistas ---- */
+.vista{flex:1;min-height:0;display:flex;flex-direction:column}
+.vista[hidden]{display:none}
+
+/* ---- Cabecera de marca ---- */
+.marca{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--mp-negro);
+  padding:16px 24px;
+}
+.marca-logo{
+  display:block;
+  width:min(360px,60vw);
+  height:auto;
+}

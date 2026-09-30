@@ -1,0 +1,110 @@
+/* ================================
+   PORTADA — selección de tipo de recorte
+   Diseño de referencia: 1400×750
+================================ */
+
+/* Las reglas de .vista y .marca viven en base.css, compartidas con la herramienta. */
+
+.portada-cuerpo{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:30px;
+  padding:24px;
+  /* El bloque queda ligeramente por encima del centro óptico, como en el diseño */
+  padding-bottom:44px;
+}
+
+.portada-titulo{
+  margin:0;
+  font-size:1.45rem;
+  font-weight:700;
+  letter-spacing:.01em;
+  color:var(--mp-ambar);
+  text-align:center;
+}
+
+/* ---- Tarjetas de modo ---- */
+.modos{
+  list-style:none;margin:0;padding:0;
+  display:flex;justify-content:center;align-items:flex-start;
+  gap:clamp(40px,9vw,124px);
+  flex-wrap:wrap;
+}
+
+.modo{
+  display:flex;flex-direction:column;align-items:center;gap:22px;
+  background:none;border:0;padding:0;
+  font:inherit;color:inherit;
+  cursor:pointer;
+}
+
+/* El recuadro NO viene en el SVG: se dibuja aquí, así se recolorea en hover
+   con una sola regla y los iconos quedan limpios.
+
+   `content-box` a propósito: los iconos vienen con 4 px de trazo sobre un
+   lienzo de 115, y se dibujan a tamaño natural. Con el `border-box` que hereda
+   todo lo demás, el borde de 4 se comería 8 px del hueco, el SVG se escalaría
+   a 107 y su trazo quedaría en 3,72 — casi igual que el borde, pero no igual.
+   Reservando los 115 de dentro, los dos pesos son exactamente 4. */
+.modo-icono{
+  box-sizing:content-box;
+  display:block;
+  width:115px;height:115px;
+  border:4px solid var(--mp-ambar);
+  border-radius:10px;
+  transition:border-color .18s ease;
+}
+/* El SVG va incrustado en el HTML y pintado con `currentColor`. Con <img> el
+   navegador no deja recolorear el dibujo desde CSS —en el hover cambiaba el
+   borde y el icono se quedaba ámbar—, y como máscara de CSS funcionaba pero
+   el navegador lo pide como recurso aparte, que la CSP corporativa podría
+   bloquear. Incrustado no hay petición que bloquear, y basta con cambiar
+   `color` para que se recoloreen borde e icono a la vez.
+
+   El precio: si reexportas los iconos desde Illustrator, hay que volver a
+   pegar los trazados en index.html. Los ficheros de assets/img/ se quedan
+   como fuente de la verdad. */
+.modo-glifo{
+  display:block;width:100%;height:100%;
+  color:var(--mp-ambar);
+  fill:none;
+  stroke:currentColor;stroke-width:4;
+  stroke-linecap:round;stroke-linejoin:round;
+  transition:color .18s ease;
+}
+
+.modo:hover  .modo-icono,
+.modo:focus-visible .modo-icono{border-color:var(--mp-gris)}
+.modo:hover  .modo-glifo,
+.modo:focus-visible .modo-glifo{color:var(--mp-gris)}
+
+.modo:focus{outline:none}
+.modo:focus-visible .modo-icono{outline:2px solid var(--mp-blanco);outline-offset:4px}
+
+/* Los rótulos van ya en mayúsculas en el HTML: con text-transform, el
+   "800x800" del segundo modo se convertía en "800X800". */
+.modo-nombre{
+  text-align:center;line-height:1.5;
+  font-size:1.2rem;font-weight:400;
+  color:var(--mp-gris-texto);
+}
+
+/* Modo aún no disponible: mismo aspecto, sin reacción al ratón */
+.modo[disabled]{cursor:default}
+.modo[disabled]:hover .modo-icono{border-color:var(--mp-ambar)}
+.modo[disabled]:hover .modo-glifo{color:var(--mp-ambar)}
+
+/* ---- Pie ---- */
+.portada-pie{
+  flex-shrink:0;
+  text-align:center;padding:18px 24px 26px;
+  font-size:.7rem;letter-spacing:.08em;
+  color:var(--mp-gris-pie);
+}
+
+/* ---- Pantallas estrechas ---- */
+@media (max-width:560px){
+  .modos{gap:36px}
+  .portada-cuerpo{gap:24px;padding-bottom:32px}
+  .portada-titulo{font-size:1.1rem}
+}

@@ -1,0 +1,350 @@
+/* ================================
+   HERRAMIENTA — modo actores 800x800
+
+   Reutiliza el lenguaje visual de app.css (.acciones, .btn, .dropzone,
+   .progress, .item, .badge, .toolbar…), que son clases globales. Aquí sólo
+   va lo que este modo añade.
+
+   La idea que ordena todo: cada barra inferior gobierna la columna que tiene
+   encima. La izquierda actúa sobre el original, la derecha sobre el encuadre.
+   Así ningún mando queda lejos de lo que modifica y no sobra ancho por ningún
+   lado — antes había 1100 px de barra vacía y una caja de mandos al 82%.
+================================ */
+
+/* ---- Rejilla principal: dos columnas, dos filas ----
+   Arriba, original | previews. Abajo, una barra bajo cada uno, alineadas por
+   la misma rejilla. El original es sólo la zona de medir —las pupilas suelen
+   venir ya puestas por el detector—, así que se lleva la parte menor. */
+#app-actores main{
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(280px,0.5fr) minmax(440px,1fr);
+  grid-template-rows:1fr auto;
+  background:var(--ui-visor);
+}
+#app-actores .viewer{border-right:1px solid var(--ui-linea)}
+
+.ac-panel{
+  min-height:0;overflow-y:auto;
+  padding:16px;
+  background:var(--mp-negro);
+  display:flex;flex-direction:column;gap:12px;
+}
+
+/* ---- Botón de modo activo (EDICIÓN / VER TODO) ---- */
+#app-actores .btn.activo,
+#app-actores .btn.activo:hover{
+  background:var(--mp-ambar);
+  color:var(--ui-btn);          /* gris oscuro sobre el ámbar */
+  font-weight:700;
+}
+
+/* Sin proyecto, EDICIÓN está marcado como activo Y apagado a la vez. Manda el
+   apagado: un ámbar encendido diría «esto se puede usar» y no es verdad. */
+#app-actores .btn.activo:disabled,
+#app-actores .btn.activo:disabled:hover{
+  background:var(--ui-btn);color:var(--mp-gris-texto);font-weight:400;
+}
+
+/* ================================
+   VER TODO — parrilla de revisión
+================================ */
+.ac-revision{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;
+  background:var(--mp-negro);
+}
+
+/* `hidden` lo aplica el navegador con prioridad mínima, así que cualquier
+   regla que declare `display` lo pisa — y `.layout` declara `display:grid`.
+   Hay que decirlo explícitamente en las dos, o se ven las dos a la vez. */
+.ac-revision[hidden],
+#app-actores .layout[hidden]{display:none}
+
+.ac-revision-barra{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px;
+  border-bottom:1px solid var(--ui-linea);
+  background:var(--ui-barra);
+}
+.ac-revision-cuenta{
+  margin-left:auto;
+  font-size:.7rem;letter-spacing:.06em;color:var(--mp-gris-texto);
+}
+
+/* Los dos conmutadores de forma. El glifo se dibuja con un borde en vez de
+   con un carácter: así el cuadrado y el círculo salen idénticos de grosor y
+   no dependen de qué tipografía tenga instalada cada máquina. */
+.ac-forma{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  background:var(--ui-btn);border:1px solid transparent;border-radius:4px;
+  cursor:pointer;transition:.15s;
+}
+.ac-forma:hover{background:var(--ui-btn-hover)}
+.ac-forma:focus-visible{outline:2px solid var(--mp-ambar);outline-offset:2px}
+.ac-forma-glifo{
+  width:15px;height:15px;
+  border:2px solid var(--mp-gris-texto);
+  transition:border-color .15s;
+}
+.ac-forma--circulo .ac-forma-glifo{border-radius:50%}
+.ac-forma.activo .ac-forma-glifo{border-color:var(--mp-ambar)}
+
+/* Cuántas caben por fila lo decide la ventana, no un número fijo. El mínimo
+   de 175 px deja unas 7 por fila a ~200 px en un portátil: por debajo de 120
+   ya no se distingue si una cara está bien colocada —y entonces la parrilla
+   deja de servir para lo único que sirve—, y por encima de 220 se ven pocas
+   de golpe, que es justo lo contrario de lo que se busca aquí. */
+.ac-parrilla{
+  flex:1;min-height:0;overflow-y:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(175px,1fr));
+  gap:14px;padding:18px;
+  align-content:start;
+}
+
+.ac-celda-caja{
+  margin:0;min-width:0;
+  display:flex;flex-direction:column;gap:6px;
+}
+.ac-celda-nombre{
+  font-size:.75rem;font-weight:300;
+  color:var(--mp-gris-texto);text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.ac-celda{
+  position:relative;
+  aspect-ratio:1;padding:0;
+  background:var(--stage-empty);
+  border:1px solid var(--ui-linea);border-radius:4px;
+  cursor:pointer;overflow:hidden;
+  display:grid;place-items:center;
+  font:inherit;color:var(--mp-ambar);
+  font-size:.66rem;letter-spacing:.06em;
+  transition:border-color .15s,transform .15s;
+}
+.ac-celda:hover{border-color:var(--mp-ambar);transform:scale(1.03)}
+.ac-celda:focus-visible{outline:2px solid var(--mp-blanco);outline-offset:2px}
+.ac-celda img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* Las que no tienen pupilas: sin recorte que enseñar, marcadas en ámbar */
+.ac-celda--falta{border-color:var(--mp-ambar);border-style:dashed}
+
+/* La forma redonda no redibuja nada: recorta los mismos píxeles */
+.ac-parrilla--redonda .ac-celda{border-color:transparent;background:none}
+.ac-parrilla--redonda .ac-celda img{border-radius:50%}
+.ac-parrilla--redonda .ac-celda--falta{
+  border-color:var(--mp-ambar);border-radius:50%;background:var(--stage-empty);
+}
+
+/* ---- Botones aún sin construir ----
+   EXPORTAR RECORTES y CSV CUSTOM llegan en sus pasos. Apagados y con el
+   cursor de "no disponible", para que no parezcan operativos. */
+#app-actores .acciones .btn:disabled{
+  background:var(--ui-btn);color:var(--mp-gris-texto);
+  font-weight:400;cursor:not-allowed;opacity:.55;
+}
+#app-actores .acciones .btn:disabled:hover{background:var(--ui-btn);color:var(--mp-gris-texto)}
+
+/* ---- Los dos previews ----
+   Se llevan todo el panel: son lo que de verdad hay que mirar. */
+.ac-previews{
+  flex:1;min-height:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  /* Lado a lado, el tamaño lo limita el ancho, no el alto: sobra hueco
+     vertical. Centrado reparte ese sobrante arriba y abajo en vez de
+     amontonar los previews contra el techo. */
+  align-content:center;
+}
+.ac-preview{margin:0;display:flex;flex-direction:column;gap:7px;min-width:0}
+.ac-preview canvas{
+  width:100%;height:auto;aspect-ratio:1;display:block;
+  background:var(--stage-empty);
+  border:1px solid var(--ui-linea);border-radius:4px;
+}
+.ac-preview--redondo canvas{border-color:transparent;border-radius:50%}
+/* Apercu Black (peso 900) está cargado en fonts.css, así que es el corte real
+   y no un engrosado sintético del navegador. */
+.ac-preview figcaption{
+  margin-top:3px;
+  font-size:.92rem;font-weight:900;
+  color:var(--mp-ambar);text-align:center;
+}
+
+/* ================================
+   Las dos barras inferiores
+================================ */
+.ac-barra{
+  grid-row:2;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.ac-barra--encuadre{
+  gap:18px;
+  justify-content:center;      /* centrado en su columna, no pegado al borde */
+  border-left:1px solid var(--ui-linea);
+}
+
+/* Rótulo a la izquierda de su mando, como en el boceto original */
+.ac-mando{display:flex;align-items:center;gap:9px}
+.ac-rotulo{
+  font-size:.7rem;letter-spacing:.07em;color:var(--ui-btn-texto);
+  white-space:nowrap;
+}
+
+/* Las flechas van en FILA (← ↑ ↓ →), no en cruceta.
+   La cruceta se leía mejor —la forma coincidía con la dirección—, pero ocupaba
+   dos filas y era ella la que fijaba el alto de las dos barras: 70 px de suelo
+   que se restaban a los previews. En fila, la barra baja a una sola altura de
+   botón. El orden es el del joystick de toda la vida. */
+.ac-flechas,
+.ac-par{display:flex;gap:3px}
+
+/* Separa los mandos que TRANSFORMAN de los que no: guías es vista y reset
+   es deshacer, y mezclarlos con posición/escala/giro los confunde. */
+/* Separa grupos de botones que hacen cosas distintas. Se usa en la barra de
+   acciones —salir del proyecto · cómo se mira · sacarlo— y en la del encuadre,
+   donde aparta los mandos que TRANSFORMAN de los que sólo son vista o deshacer. */
+.ac-separador{
+  width:1px;align-self:stretch;margin:2px 0;
+  background:var(--ui-separador);
+}
+
+/* En la barra de acciones el pipe solo no basta: los bloques tienen que
+   respirar. Con 8 px de separación entre botones hermanos y 21 a cada lado
+   del pipe, los tres grupos se leen como grupos antes de leer los rótulos. */
+#app-actores .acciones-izq .ac-separador{margin-left:21px;margin-right:21px}
+
+/* Interruptor deslizante de las guías, como en el boceto */
+.ac-switch{position:relative;display:inline-block;width:34px;height:18px;flex-shrink:0}
+.ac-switch input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.ac-switch-pista{
+  position:absolute;inset:0;pointer-events:none;
+  border-radius:999px;
+  background:var(--ui-btn);border:1px solid var(--ui-linea);
+  transition:background .18s,border-color .18s;
+}
+.ac-switch-pista::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--mp-gris-texto);
+  transition:left .18s,background .18s;
+}
+.ac-switch input:checked + .ac-switch-pista{background:#3b2f1b;border-color:var(--mp-ambar)}
+.ac-switch input:checked + .ac-switch-pista::after{left:18px;background:var(--mp-ambar)}
+.ac-switch input:focus-visible + .ac-switch-pista{outline:2px solid var(--mp-ambar);outline-offset:2px}
+
+/* Apagados: en las dos barras de abajo y en los conmutadores de forma */
+.ac-barra .btn-icono:disabled,
+.ac-barra .btn:disabled,
+.ac-forma:disabled{opacity:.3;cursor:not-allowed}
+.ac-barra .btn-icono:disabled:hover,
+.ac-forma:disabled:hover{background:var(--ui-btn)}
+.ac-barra .btn:disabled:hover{background:var(--ui-btn);color:var(--ui-btn-texto)}
+
+/* El interruptor de guías no se apaga con opacity: al ir el <input> dentro y
+   la pista fuera, atenuar sólo el input no se vería. Se atenúa el conjunto. */
+.ac-switch:has(input:disabled){opacity:.3}
+.ac-switch input:disabled{cursor:not-allowed}
+
+/* ================================
+   Barra lateral
+================================ */
+
+/* Con el proyecto cargado, la zona de arrastre se pliega: a partir de ahí lo
+   que necesita alto es la lista, no la invitación a soltar ficheros. */
+#acDrop.plegada{padding:11px 14px;margin:14px 16px 10px}
+#acDrop.plegada .title{font-size:.78rem}
+#acDrop.plegada .title::before{content:'+  '}
+#acDrop.plegada .hint{display:none}
+
+/* La marca de retocada se cuela entre el nombre y el badge, así que la fila
+   de la miniatura necesita una columna más que la del modo de carátulas. */
+#app-actores .item{grid-template-columns:56px 1fr auto auto}
+
+.ac-retocada{color:var(--mp-ambar);font-size:.85rem;line-height:1;cursor:help}
+
+/* ---- Aviso de ficheros descartados ----
+   En ámbar y con su lista: se ve sin buscarlo y dice qué ha pasado. */
+.ac-avisos{
+  margin:0 16px 10px;flex-shrink:0;
+  border:1px solid var(--mp-ambar);border-radius:10px;
+  padding:10px 12px;
+  background:var(--ui-barra);
+  color:var(--mp-gris-texto);font-size:.72rem;
+  max-height:160px;overflow-y:auto;
+}
+.ac-avisos strong{display:block;color:var(--mp-ambar);margin-bottom:6px}
+.ac-descarte{
+  display:flex;flex-direction:column;gap:1px;
+  padding:4px 0;border-top:1px solid var(--ui-linea);
+}
+.ac-descarte span{color:var(--mp-blanco);word-break:break-all}
+.ac-descarte em{font-style:normal;color:var(--err)}
+
+/* ================================
+   Modal de IDs que faltan
+================================ */
+/* `.modal` limita a 460 px, que es lo suyo para un sí/no. Ésta enseña una
+   lista con nombres de fichero largos y necesita más: el ancho se le da al
+   DIÁLOGO, no a la caja, o el diálogo la recorta y el contenido se desborda. */
+#acModalIds{max-width:min(760px,calc(100vw - 32px))}
+.ac-caja-ids{width:100%}
+
+.ac-ids-lista{
+  margin:14px 0 10px;
+  max-height:min(46vh,380px);overflow-y:auto;
+  border:1px solid var(--ui-linea);border-radius:8px;
+}
+.ac-ids-fila{
+  display:grid;
+  grid-template-columns:1fr auto 108px;
+  align-items:center;gap:10px;
+  padding:9px 12px;
+  border-bottom:1px solid var(--ui-linea);
+}
+.ac-ids-fila:last-child{border-bottom:0}
+
+.ac-ids-nombre{
+  font-size:.8rem;color:var(--mp-blanco);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ac-ids-motivo{font-size:.68rem;color:var(--mp-ambar);white-space:nowrap}
+
+.ac-ids-campo{
+  font:inherit;font-size:.8rem;
+  background:var(--ui-btn);color:var(--mp-blanco);
+  border:1px solid var(--ui-linea);border-radius:4px;
+  padding:5px 8px;width:100%;
+}
+.ac-ids-campo:focus{outline:2px solid var(--mp-ambar);outline-offset:1px}
+
+/* Los IDs candidatos de un nombre repetido: se ofrecen, no se eligen solos */
+.ac-ids-candidatos{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.ac-ids-candidato{
+  font:inherit;font-size:.68rem;
+  background:var(--ui-btn);color:var(--mp-ambar);
+  border:1px solid var(--mp-ambar);border-radius:999px;
+  padding:2px 10px;cursor:pointer;
+}
+.ac-ids-candidato:hover{background:var(--ui-btn-hover)}
+
+.ac-ids-acciones{align-items:center}
+.ac-ids-relleno{flex:1}
+
+/* ================================
+   Pantallas estrechas
+================================ */
+/* En portátiles no se estrecha más el visor: por debajo de unos 300 px su
+   barra no cabe en una línea y se parte en dos, subiendo el alto de las DOS
+   barras —comparten fila de rejilla— y robándoselo a los previews. */
+@media (max-width:1280px){
+  .ac-barra--encuadre{gap:12px}
+  #app-actores .ac-barra{gap:10px}
+}
+@media (max-width:980px){
+  .ac-previews{grid-template-columns:1fr}
+}

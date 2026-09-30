@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 115 115">
+  <!-- Generator: Adobe Illustrator 30.8.2, SVG Export Plug-In . SVG Version: 2.1.4 Build 7)  -->
+  <defs>
+    <style>
+      .st0, .st1 {
+        fill: none;
+      }
+
+      .st1 {
+        stroke: #efa500;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 4px;
+      }
+
+      .st2 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="st0" y="0" width="115" height="115" rx="8.04" ry="8.04"/>
+    </clipPath>
+  </defs>
+  <g class="st2">
+    <g>
+      <circle class="st1" cx="57.47" cy="27.28" r="15.12"/>
+      <path class="st1" d="M83.33,128.66c2.6-1.76,4.31-4.73,4.31-8.11v-52.18c0-10.14-8.22-18.36-18.36-18.36h-11.76s-.06,0-.06,0h-11.76c-10.14,0-18.36,8.22-18.36,18.36v52.18c0,3.37,1.71,6.35,4.31,8.11"/>
+      <path class="st1" d="M74.62,83.51v97.46c0,2.71-2.19,4.9-4.9,4.9h-24.67c-2.71,0-4.9-2.19-4.9-4.9v-97.46"/>
+      <line class="st1" x1="57.39" y1="122.2" x2="57.39" y2="185.87"/>
+    </g>
+  </g>
+</svg>

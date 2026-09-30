@@ -1,0 +1,9 @@
+# Basura de macOS
+.DS_Store
+._*
+
+# Carpeta temporal de las pruebas
+.claude/tmp-prueba/
+
+# Permisos locales del editor, no son del proyecto
+.claude/settings.local.json

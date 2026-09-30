@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "cropper",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Volumes/MOVISTAR+/00 APPS/PUPILATOR/CROPPER_V1.0/.claude/server.mjs"],
+      "port": 8777
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+/* ================================
+   TOKENS — fuente única de color
+   Cambiar aquí repinta toda la app.
+================================ */
+:root{
+  /* ---- Identidad M+ ----
+     OJO: el ámbar está tomado a ojo del mockup. Si tienes el valor exacto
+     de la guía de marca, cámbialo aquí y se propaga a toda la app. */
+  --mp-negro:#000;
+  --mp-ambar:#e9a63c;
+  --mp-blanco:#fff;
+  --mp-gris:#888;          /* siluetas y hover del recuadro punteado */
+  --mp-gris-texto:#a8a8a8; /* rótulos bajo las tarjetas */
+  --mp-gris-pie:#8a8a8a;   /* pie de página */
+  --mp-fuente:'Apercu',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  /* ---- Interfaz de la herramienta ---- */
+  --ui-barra:#141414;      /* barras de acciones y de herramientas */
+  --ui-visor:#0d0d0d;      /* fondo del área del visor */
+  --ui-linea:#262626;      /* bordes y filetes: casi invisibles a propósito */
+  --ui-separador:#4a4a4a;  /* el pipe que separa grupos de botones: sí se ve */
+  --ui-btn:#2e2e2e;
+  --ui-btn-hover:#3d3d3d;
+  --ui-btn-texto:#d0d0d0;
+
+  --brand:#7fe39a;         /* verde de acción: exportar, badge OK */
+  --err:#ff6b6b;
+
+  /* ---- Colores que el canvas dibuja por JS (ver js/viewer.js) ---- */
+  --pt-1:#7fe39a;          /* punto 1 — ojo izquierdo */
+  --pt-2:#ffd166;          /* punto 2 — ojo derecho  */
+  --pt-stroke:rgba(0,0,0,.6);
+  --pupil-line:rgba(233,166,60,.95);  /* línea entre pupilas */
+  --stage-empty:#0d0d0d;   /* fondo del visor sin imagen */
+  --thumb-bg:#1a1a1a;      /* fondo grabado en la miniatura */
+
+  /* Barbilla MEDIDA por el detector, frente a la raya de la plantilla. Va en
+     otro color a propósito: la plantilla es ámbar y discontinua, lo medido es
+     cian y continuo. Así nunca se confunde lo que pide el diseño con lo que
+     ha encontrado la máquina. */
+  --barbilla-medida:#4fc3f7;
+}
