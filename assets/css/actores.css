@@ -34,21 +34,25 @@
      la gracia de ponerlas es que se vean sin que nadie las explique. */
   scrollbar-width:thin;
   scrollbar-color:var(--mp-gris) var(--mp-negro);
-
-  /* El sitio de la barra se reserva siempre, aparezca o no. Si no, al pasar de
-     AJUSTAR a 100% la barra vertical estrecha el hueco, eso hace aparecer la
-     horizontal, lo que reduce el alto, lo que vuelve a mover la vertical...
-     y el navegador da vueltas antes de asentarse, con su parpadeo. Reservado,
-     el hueco no cambia nunca de tamaño y no hay baile. */
-  scrollbar-gutter:stable;
 }
 
-/* El espaciador sólo existe para dar tamaño al área desplazable */
-.ac-espacio{position:relative}
+/* El espaciador sólo existe para dar tamaño al área desplazable, y va FUERA
+   DE FLUJO y hermano del lienzo, no envolviéndolo.
+
+   Si el lienzo estuviera dentro, lo empujaría: el lienzo mide lo que la
+   ventana, así que con la imagen ajustada sobresaldría del espaciador y
+   crearía desplazamiento él solo. Aparecería una barra, la barra estrecharía
+   la ventana, el lienzo se encogería, el desplazamiento desaparecería, la
+   barra se iría... y la imagen tiembla sin parar.
+
+   Así, el área desplazable es la mayor de las dos aportaciones: el lienzo
+   (que siempre mide lo que la ventana) y el espaciador (la imagen ampliada).
+   Con la imagen ajustada manda el lienzo y no hay nada que desplazar. */
+.ac-espacio{position:absolute;top:0;left:0;pointer-events:none}
 
 /* El lienzo se queda pegado arriba a la izquierda del hueco visible mientras
-   el espaciador se desplaza por debajo. Así mide siempre lo que la ventana. */
-#acStage{position:sticky;top:0;left:0;display:block}
+   el espaciador se desplaza por debajo. */
+#acStage{position:sticky;top:0;left:0;display:block;z-index:1}
 
 /* Respaldo para navegadores sin `scrollbar-width`/`scrollbar-color`. En el
    Chrome actual NO se aplica —las propiedades estándar de arriba tienen

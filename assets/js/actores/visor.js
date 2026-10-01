@@ -56,11 +56,18 @@ const estaVisible = () => els.stage.offsetParent !== null;
 ================================ */
 const hueco = () => ({ ancho: els.visor.clientWidth, alto: els.visor.clientHeight });
 
+/* El espaciador mide exactamente la imagen ampliada, y nada más.
+
+   OJO: no debe depender del tamaño de la ventana. Lo intenté y fue peor —
+   la ventana se estrecha cuando aparece una barra, así que el espaciador
+   seguía a la barra y la barra seguía al espaciador. Al ser hermano del
+   lienzo y estar fuera de flujo (ver actores.css), con la imagen ajustada
+   manda el lienzo y no hay nada que desplazar. */
 function ajustarEspacio(){
   const c = actual();
   const z = estado.vista.zoom;
-  els.espacio.style.width  = c ? `${c.width  * z}px` : '100%';
-  els.espacio.style.height = c ? `${c.height * z}px` : '100%';
+  els.espacio.style.width  = c ? `${c.width  * z}px` : '0';
+  els.espacio.style.height = c ? `${c.height * z}px` : '0';
 }
 
 /* De dónde está el scroll a por dónde empezar a dibujar. Si la imagen cabe,
