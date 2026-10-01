@@ -68,6 +68,28 @@ function ajustarEspacio(){
   const z = estado.vista.zoom;
   els.espacio.style.width  = c ? `${c.width  * z}px` : '0';
   els.espacio.style.height = c ? `${c.height * z}px` : '0';
+  ajustarBarras();
+}
+
+/* Las barras se encienden y se apagan a mano, no se deja que el navegador lo
+   deduzca del contenido.
+
+   Dejándoselo a él, bastaba medio píxel de más —el hueco se mide redondeando
+   y la columna tiene ancho fraccionario— para que el lienzo sobresaliera,
+   apareciera una barra, el hueco encogiera, el lienzo encogiera, la barra se
+   fuera... y temblara, incluso sin ninguna imagen cargada.
+
+   Diciéndolo explícitamente no hay nada que deducir: con la imagen entera a
+   la vista, o sin imagen, no hay barras y no puede temblar. El margen de 1 px
+   evita que el caso límite —la imagen ajustada, que mide justo lo que el
+   hueco— quede en la frontera. */
+function ajustarBarras(){
+  const c = actual();
+  const { ancho, alto } = hueco();
+  const z = estado.vista.zoom;
+
+  const hayQueDesplazar = !!c && (c.width*z > ancho + 1 || c.height*z > alto + 1);
+  els.visor.style.overflow = hayQueDesplazar ? 'auto' : 'hidden';
 }
 
 /* De dónde está el scroll a por dónde empezar a dibujar. Si la imagen cabe,
@@ -359,9 +381,10 @@ new ResizeObserver(()=>{
   if(ancho === ultimoHueco.ancho && alto === ultimoHueco.alto) return;
   ultimoHueco = { ancho, alto };
 
-  if(actual()){
-    ajustarEspacio();
-    sincronizarConElScroll();
-  }
+  ajustarEspacio();            // también apaga las barras cuando no hay imagen
+  if(actual()) sincronizarConElScroll();
   pintar();
 }).observe(els.visor);
+
+/* Al arrancar no hay imagen: nada que desplazar, ninguna barra. */
+ajustarEspacio();
