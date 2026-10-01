@@ -66,6 +66,8 @@ export const els = {
   guias          : document.getElementById('acGuias'),
 
   /* Visor del original */
+  visor    : document.getElementById('acVisor'),
+  espacio  : document.getElementById('acEspacio'),
   stage    : document.getElementById('acStage'),
   ajustar  : document.getElementById('acAjustar'),
   vista100 : document.getElementById('acVista100'),

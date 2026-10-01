@@ -42,50 +42,90 @@ export const barbillaVisible = rec => rec?.barbilla || barbillaPorDefecto(rec?.p
    respondería igualmente al teclado y al ratón. */
 const estaVisible = () => els.stage.offsetParent !== null;
 
-/* ---------- Vista ---------- */
-export function recalcularEncuadreVista(){
-  const c = actual(); if(!c) return;
-  const r = els.stage.getBoundingClientRect();
+/* ================================
+   Vista: el desplazamiento lo manda el navegador
 
-  if(estado.vista.modo === 'fit'){
-    estado.vista.panX = (r.width  - c.width  * estado.vista.zoom)/2;
-    estado.vista.panY = (r.height - c.height * estado.vista.zoom)/2;
-  }else if(estado.vista.modo === '100'){
-    estado.vista.panX = (r.width - c.width * estado.vista.zoom)/2;
-    estado.vista.panY = 0;
-  }
+   El lienzo mide siempre lo que la ventana —una foto de 5464x8192 al 100% no
+   cabría en uno de su tamaño—, así que la imagen no se desplaza moviendo el
+   lienzo, sino cambiando el punto por el que se dibuja.
+
+   Para que el navegador pinte barras de verdad hay un ESPACIADOR del tamaño
+   de la imagen ampliada. El navegador desplaza eso, y aquí se traduce su
+   posición a dónde empezar a dibujar. Cuando la imagen cabe entera, no hay
+   barras y se centra.
+================================ */
+const hueco = () => ({ ancho: els.visor.clientWidth, alto: els.visor.clientHeight });
+
+function ajustarEspacio(){
+  const c = actual();
+  const z = estado.vista.zoom;
+  els.espacio.style.width  = c ? `${c.width  * z}px` : '100%';
+  els.espacio.style.height = c ? `${c.height * z}px` : '100%';
+}
+
+/* De dónde está el scroll a por dónde empezar a dibujar. Si la imagen cabe,
+   el scroll no existe y manda el centrado. */
+function sincronizarConElScroll(){
+  const c = actual(); if(!c) return;
+  const { ancho, alto } = hueco();
+  const z = estado.vista.zoom;
+
+  estado.vista.panX = c.width  * z <= ancho ? (ancho - c.width  * z)/2 : -els.visor.scrollLeft;
+  estado.vista.panY = c.height * z <= alto  ? (alto  - c.height * z)/2 : -els.visor.scrollTop;
+}
+
+/* Deja centrado el punto de la imagen que se indique */
+function centrarEn(ix, iy){
+  const { ancho, alto } = hueco();
+  const z = estado.vista.zoom;
+  els.visor.scrollLeft = ix*z - ancho/2;
+  els.visor.scrollTop  = iy*z - alto /2;
+  sincronizarConElScroll();
+}
+
+/* Qué punto de la imagen se está mirando ahora mismo en el centro */
+function centroActual(){
+  const { ancho, alto } = hueco();
+  const z = estado.vista.zoom;
+  return { x:(ancho/2 - estado.vista.panX)/z, y:(alto/2 - estado.vista.panY)/z };
 }
 
 export function ajustarImagen(){
   const c = actual(); if(!c) return;
-  const r = els.stage.getBoundingClientRect();
-  estado.vista.zoom = Math.min(r.width/c.width, r.height/c.height);
-  estado.vista.modo = 'fit';
-  recalcularEncuadreVista();
+  const { ancho, alto } = hueco();
+  estado.vista.zoom = Math.min(ancho/c.width, alto/c.height);
+  ajustarEspacio();
+  sincronizarConElScroll();
   pintar();
 }
 
 export function vista100(){
   const c = actual(); if(!c) return;
   estado.vista.zoom = 1;
-  estado.vista.modo = '100';
-  recalcularEncuadreVista();
+  ajustarEspacio();
+  centrarEn(c.width/2, c.height/2);   // al 100% se entra por el centro
   pintar();
 }
 
 export function aplicarZoom(f){
-  if(!actual()) return;
-  const r = els.stage.getBoundingClientRect();
+  const c = actual(); if(!c) return;
   const antes = estado.vista.zoom;
-  estado.vista.zoom = clamp(estado.vista.zoom*f, 0.05, 8);
-  const factor = estado.vista.zoom/antes;
+  const nuevo = clamp(antes*f, 0.05, 8);
+  if(nuevo === antes) return;
 
-  estado.vista.panX = r.width /2 + (estado.vista.panX - r.width /2)*factor;
-  estado.vista.panY = r.height/2 + (estado.vista.panY - r.height/2)*factor;
-
-  estado.vista.modo = 'custom';
+  const centro = centroActual();      // se conserva lo que se estaba mirando
+  estado.vista.zoom = nuevo;
+  ajustarEspacio();
+  centrarEn(centro.x, centro.y);
   pintar();
 }
+
+/* El navegador desplaza el espaciador; aquí sólo hay que repintar */
+els.visor.addEventListener('scroll', ()=>{
+  if(!actual()) return;
+  sincronizarConElScroll();
+  pintar();
+});
 
 /* ---------- Pintado ---------- */
 function pupila(p, color, zoom){
@@ -111,23 +151,35 @@ function marcaHueca(p, color, zoom){
 
 export function pintar(){
   const c = actual();
-  const r = els.stage.getBoundingClientRect();
+  const { ancho, alto } = hueco();
   const dpr = window.devicePixelRatio || 1;
 
-  els.stage.width  = Math.floor(r.width  * dpr);
-  els.stage.height = Math.floor(r.height * dpr);
+  /* El lienzo mide lo que el hueco visible, no lo que el espaciador: hay que
+     decírselo a mano, porque dentro de un contenedor más grande un 100% de CSS
+     se referiría al espaciador.
+
+     Y sólo se toca SI HA CAMBIADO. Si no, el observador de tamaño repinta,
+     el repintado reescribe el tamaño, eso cuenta como cambio de disposición
+     y el observador vuelve a dispararse: el navegador avisa con un
+     «ResizeObserver loop» y la imagen parpadea. */
+  const anchoCss = `${ancho}px`, altoCss = `${alto}px`;
+  if(els.stage.style.width !== anchoCss)  els.stage.style.width  = anchoCss;
+  if(els.stage.style.height !== altoCss)  els.stage.style.height = altoCss;
+
+  const px = Math.floor(ancho * dpr), py = Math.floor(alto * dpr);
+  if(els.stage.width !== px)  els.stage.width  = px;
+  if(els.stage.height !== py) els.stage.height = py;
+  else                        ctx.clearRect(0,0,px,py);   // cambiar width ya lo limpia
 
   ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,r.width,r.height);
+  ctx.clearRect(0,0,ancho,alto);
 
   if(!c){
     ctx.fillStyle = C.vacio;
-    ctx.fillRect(0,0,r.width,r.height);
+    ctx.fillRect(0,0,ancho,alto);
     return;
   }
-
-  if(estado.vista.modo !== 'custom') recalcularEncuadreVista();
 
   ctx.save();
   ctx.translate(estado.vista.panX, estado.vista.panY);
@@ -201,8 +253,7 @@ els.stage.addEventListener('mousedown', ev=>{
   if(ev.button === 2 || (ev.button === 0 && teclaMano)){
     paneando = true;
     inicioPan = {x:ev.clientX, y:ev.clientY};
-    inicioVista = {x:estado.vista.panX, y:estado.vista.panY};
-    estado.vista.modo = 'custom';
+    inicioVista = {x:els.visor.scrollLeft, y:els.visor.scrollTop};
     actualizarCursor();
     return;
   }
@@ -252,10 +303,12 @@ window.addEventListener('mousemove', ev=>{
   const c = actual(); if(!c) return;
 
   if(paneando){
-    estado.vista.panX = inicioVista.x + (ev.clientX - inicioPan.x);
-    estado.vista.panY = inicioVista.y + (ev.clientY - inicioPan.y);
-    pintar();
-    return;
+    /* El arrastre con espacio o botón derecho sigue existiendo, pero ahora
+       mueve el SCROLL: así las barras acompañan al arrastre en vez de
+       contradecirlo. Se arrastra la imagen, luego el scroll va al revés. */
+    els.visor.scrollLeft = inicioVista.x - (ev.clientX - inicioPan.x);
+    els.visor.scrollTop  = inicioVista.y - (ev.clientY - inicioPan.y);
+    return;   // el repintado lo dispara el propio scroll
   }
 
   if(arrastrando !== -1){
@@ -287,8 +340,21 @@ els.stage.addEventListener('mouseleave', ()=>{
   if(!paneando) els.stage.style.cursor = 'default';
 });
 
-/* ---------- Redimensionado ---------- */
+/* ---------- Redimensionado ----------
+   Se observa el VISOR, no el lienzo: el lienzo ahora toma su tamaño de él, así
+   que observarlo sería preguntarle a la consecuencia en vez de a la causa. */
+let ultimoHueco = { ancho:0, alto:0 };
+
 new ResizeObserver(()=>{
-  if(actual() && estado.vista.modo !== 'custom') recalcularEncuadreVista();
+  // Sólo si el hueco ha cambiado de verdad: así una notificación repetida no
+  // provoca otro repintado que vuelva a notificar.
+  const { ancho, alto } = hueco();
+  if(ancho === ultimoHueco.ancho && alto === ultimoHueco.alto) return;
+  ultimoHueco = { ancho, alto };
+
+  if(actual()){
+    ajustarEspacio();
+    sincronizarConElScroll();
+  }
   pintar();
-}).observe(els.stage);
+}).observe(els.visor);

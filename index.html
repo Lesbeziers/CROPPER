@@ -229,8 +229,14 @@
     <!-- Rejilla de dos columnas por dos filas: arriba el original y los
          previews; abajo, una barra para cada uno, alineada con su columna. -->
     <main>
-      <div class="viewer">
-        <canvas id="acStage" width="1600" height="900"></canvas>
+      <!-- El espaciador mide lo que la imagen ampliada, para que el navegador
+           tenga algo grande que desplazar y dibuje sus barras de verdad. El
+           lienzo va pegado encima y sigue midiendo lo que la ventana: una foto
+           de 5464x8192 al 100% no cabría en un lienzo de ese tamaño. -->
+      <div class="viewer" id="acVisor">
+        <div class="ac-espacio" id="acEspacio">
+          <canvas id="acStage" width="1600" height="900"></canvas>
+        </div>
       </div>
 
       <div class="ac-panel">

@@ -22,7 +22,46 @@
   grid-template-rows:1fr auto;
   background:var(--ui-visor);
 }
-#app-actores .viewer{border-right:1px solid var(--ui-linea)}
+/* ---- Visor del original, con barras de desplazamiento ----
+   El atajo de la barra espaciadora para arrastrar sigue existiendo, pero no
+   se descubre solo. Unas barras sí: no hay que enseñárselas a nadie. */
+#app-actores .viewer{
+  border-right:1px solid var(--ui-linea);
+  display:block;              /* ya no centra con flex: lo hace el visor */
+  overflow:auto;
+
+  /* Finas, y con el tirador en el gris de la app. Va claro a propósito: toda
+     la gracia de ponerlas es que se vean sin que nadie las explique. */
+  scrollbar-width:thin;
+  scrollbar-color:var(--mp-gris) var(--mp-negro);
+
+  /* El sitio de la barra se reserva siempre, aparezca o no. Si no, al pasar de
+     AJUSTAR a 100% la barra vertical estrecha el hueco, eso hace aparecer la
+     horizontal, lo que reduce el alto, lo que vuelve a mover la vertical...
+     y el navegador da vueltas antes de asentarse, con su parpadeo. Reservado,
+     el hueco no cambia nunca de tamaño y no hay baile. */
+  scrollbar-gutter:stable;
+}
+
+/* El espaciador sólo existe para dar tamaño al área desplazable */
+.ac-espacio{position:relative}
+
+/* El lienzo se queda pegado arriba a la izquierda del hueco visible mientras
+   el espaciador se desplaza por debajo. Así mide siempre lo que la ventana. */
+#acStage{position:sticky;top:0;left:0;display:block}
+
+/* Respaldo para navegadores sin `scrollbar-width`/`scrollbar-color`. En el
+   Chrome actual NO se aplica —las propiedades estándar de arriba tienen
+   preferencia—, así que si alguien cambia el redondeo de aquí y no ve nada,
+   es por eso: hay que tocar las de arriba. */
+#app-actores .viewer::-webkit-scrollbar{width:10px;height:10px}
+#app-actores .viewer::-webkit-scrollbar-track,
+#app-actores .viewer::-webkit-scrollbar-corner{background:var(--mp-negro)}
+#app-actores .viewer::-webkit-scrollbar-thumb{
+  background:var(--mp-gris);
+  border-radius:999px;
+  border:2px solid var(--mp-negro);   /* aire alrededor: la deja más estrecha */
+}
 
 .ac-panel{
   min-height:0;overflow-y:auto;

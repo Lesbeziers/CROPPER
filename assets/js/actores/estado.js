@@ -12,7 +12,9 @@ export const LS_KEY = 'cropper-actores-v1';
 export const estado = {
   imagenes   : [],
   idx        : -1,
-  vista      : { zoom:1, panX:0, panY:0, modo:'fit' },
+  /* `panX`/`panY` ya no se fijan a mano: salen del scroll del visor, o del
+     centrado cuando la imagen cabe entera. Ver visor.js. */
+  vista      : { zoom:1, panX:0, panY:0 },
   detectando : false,
   guias      : true,   // plantilla superpuesta sobre el preview cuadrado
   revisando  : false,  // true en VER TODO
