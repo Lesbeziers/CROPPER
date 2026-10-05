@@ -192,7 +192,10 @@
     <div class="acciones-der">
       <button id="acPrev" class="btn">ANTERIOR</button>
       <!-- Hacia abajo: este botón vive en la barra de arriba -->
-      <button id="acNext" class="btn ac-atajo ac-atajo--abajo" data-atajo="ENTER">SIGUIENTE</button>
+      <span class="ac-atajo ac-atajo--abajo">
+        <button id="acNext" class="btn">SIGUIENTE</button>
+        <span class="ac-aviso"><span class="ac-aviso-titulo">ATAJOS:</span>ENTER</span>
+      </span>
     </div>
   </div>
 
@@ -276,7 +279,8 @@
         <!-- El atajo se anuncia por BLOQUE, no por botón: las cuatro flechas
              hacen lo mismo con distinta dirección y repetirlo cuatro veces
              sería ruido. -->
-        <div class="ac-mando ac-atajo" data-atajo="←  ↑  ↓  →">
+        <div class="ac-mando ac-atajo">
+          <span class="ac-aviso"><span class="ac-aviso-titulo">ATAJOS:</span>←  ↑  ↓  →</span>
           <span class="ac-rotulo">POSICIÓN</span>
           <div class="ac-flechas">
             <button id="acIzquierda" class="btn-icono" aria-label="Mover a la izquierda">←</button>
@@ -286,7 +290,8 @@
           </div>
         </div>
 
-        <div class="ac-mando ac-atajo" data-atajo="+   −">
+        <div class="ac-mando ac-atajo">
+          <span class="ac-aviso"><span class="ac-aviso-titulo">ATAJOS:</span>−   +</span>
           <span class="ac-rotulo">ESCALA</span>
           <div class="ac-par">
             <button id="acMenos" class="btn-icono" aria-label="Reducir">−</button>
@@ -294,7 +299,8 @@
           </div>
         </div>
 
-        <div class="ac-mando ac-atajo" data-atajo="Z   X">
+        <div class="ac-mando ac-atajo">
+          <span class="ac-aviso"><span class="ac-aviso-titulo">ATAJOS:</span>Z   X</span>
           <span class="ac-rotulo">GIRO</span>
           <div class="ac-par">
             <button id="acGiroIzq" class="btn-icono" aria-label="Girar a la izquierda">↺</button>

@@ -257,8 +257,10 @@
    El espacio queda fuera a propósito: no tiene botón al que asomarse. */
 .ac-atajo{position:relative}
 
-.ac-atajo::after{
-  content:attr(data-atajo);
+/* Es un elemento de verdad y no un adorno de CSS porque lleva dos estilos: el
+   rótulo «ATAJOS:» en gris y más pequeño, y las teclas en ámbar. En un
+   `::after` sólo cabe uno. */
+.ac-aviso{
   position:absolute;left:50%;bottom:calc(100% + 9px);
   transform:translateX(-50%);
   z-index:5;
@@ -266,22 +268,29 @@
   background:#0d0d0d;
   border:1px solid var(--ui-linea);
   border-radius:6px;
-  padding:5px 10px;
+  padding:5px 11px 6px;
 
   font-size:.72rem;letter-spacing:.1em;
-  color:var(--mp-ambar);white-space:nowrap;
+  color:var(--mp-ambar);
+  white-space:nowrap;text-align:center;
 
   opacity:0;pointer-events:none;transition:opacity .12s ease;
 }
-.ac-atajo--abajo::after{bottom:auto;top:calc(100% + 9px)}
+.ac-aviso-titulo{
+  display:block;
+  margin-bottom:1px;
+  font-size:.6rem;letter-spacing:.08em;
+  color:var(--mp-gris-texto);
+}
 
-.ac-atajo:hover::after,
-.ac-atajo:focus-visible::after,
-.ac-atajo:focus-within::after{opacity:1}
+.ac-atajo--abajo .ac-aviso{bottom:auto;top:calc(100% + 9px)}
+
+.ac-atajo:hover .ac-aviso,
+.ac-atajo:focus-within .ac-aviso{opacity:1}
 
 /* Sin mandos activos no hay atajo que anunciar */
-.ac-atajo:has(.btn-icono:disabled)::after,
-.ac-atajo.btn:disabled::after{content:none}
+.ac-atajo:has(.btn-icono:disabled) .ac-aviso,
+.ac-atajo:has(.btn:disabled) .ac-aviso{display:none}
 
 /* Separa grupos de botones que hacen cosas distintas. Se usa en la barra de
    acciones —salir del proyecto · cómo se mira · sacarlo— y en la del encuadre,
