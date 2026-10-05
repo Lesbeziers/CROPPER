@@ -248,6 +248,41 @@
 
 /* Separa los mandos que TRANSFORMAN de los que no: guías es vista y reset
    es deshacer, y mezclarlos con posición/escala/giro los confunde. */
+/* ---- Aviso del atajo de teclado ----
+   Propio, no el del sistema: ése tarda un segundo en salir y no se puede
+   vestir. Va por BLOQUE —el texto se pone en el contenedor, no en cada
+   botón— y aparece hacia arriba, porque estas barras están al fondo de la
+   pantalla. El de SIGUIENTE vive en la barra de arriba y sale hacia abajo.
+
+   El espacio queda fuera a propósito: no tiene botón al que asomarse. */
+.ac-atajo{position:relative}
+
+.ac-atajo::after{
+  content:attr(data-atajo);
+  position:absolute;left:50%;bottom:calc(100% + 9px);
+  transform:translateX(-50%);
+  z-index:5;
+
+  background:#0d0d0d;
+  border:1px solid var(--ui-linea);
+  border-radius:6px;
+  padding:5px 10px;
+
+  font-size:.72rem;letter-spacing:.1em;
+  color:var(--mp-ambar);white-space:nowrap;
+
+  opacity:0;pointer-events:none;transition:opacity .12s ease;
+}
+.ac-atajo--abajo::after{bottom:auto;top:calc(100% + 9px)}
+
+.ac-atajo:hover::after,
+.ac-atajo:focus-visible::after,
+.ac-atajo:focus-within::after{opacity:1}
+
+/* Sin mandos activos no hay atajo que anunciar */
+.ac-atajo:has(.btn-icono:disabled)::after,
+.ac-atajo.btn:disabled::after{content:none}
+
 /* Separa grupos de botones que hacen cosas distintas. Se usa en la barra de
    acciones —salir del proyecto · cómo se mira · sacarlo— y en la del encuadre,
    donde aparta los mandos que TRANSFORMAN de los que sólo son vista o deshacer. */
