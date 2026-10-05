@@ -265,12 +265,37 @@ function actualizarCursor(){
   els.stage.style.cursor = paneando ? 'grabbing' : (teclaMano ? 'grab' : 'default');
 }
 
+/* La barra espaciadora es, para el navegador, la tecla de AVANZAR PÁGINA.
+   Mientras el visor no se podía desplazar daba igual y el fallo estaba
+   dormido; en cuanto se le pusieron barras, el navegador empezó a dar su
+   salto justo encima del arrastre. Hay que quedársela explícitamente.
+
+   Dónde NO: en un campo de texto el espacio escribe un espacio —el de los IDs
+   de la modal—, y con una modal abierta manda ella. Sobre un botón con el foco
+   sí se la queda: después de pulsar 100% con el ratón, ese botón conserva el
+   foco, y quien mantiene pulsado el espacio quiere mover la imagen, no volver
+   a disparar el botón. Los botones siguen activándose con ENTER. */
+function elEspacioEsNuestro(){
+  if(!estaVisible()) return false;
+  if(document.querySelector('dialog[open]')) return false;
+
+  const foco = document.activeElement;
+  if(foco && (foco.tagName === 'INPUT' || foco.tagName === 'TEXTAREA' || foco.isContentEditable)) return false;
+
+  return true;
+}
+
 window.addEventListener('keydown', e=>{
-  if(!estaVisible()) return;
-  if(e.code === 'Space'){ teclaMano = true; actualizarCursor(); }
+  if(e.code !== 'Space' || !elEspacioEsNuestro()) return;
+  e.preventDefault();
+  teclaMano = true;
+  actualizarCursor();
 });
+
 window.addEventListener('keyup', e=>{
-  if(e.code === 'Space'){ teclaMano = false; actualizarCursor(); }
+  if(e.code !== 'Space') return;
+  teclaMano = false;       // se suelta siempre, aunque el foco haya cambiado
+  actualizarCursor();
 });
 
 els.stage.addEventListener('contextmenu', e=>e.preventDefault());
