@@ -11,7 +11,7 @@ import { els } from './dom.js';
 import { estado, actual } from './estado.js';
 import { copiaDeTrabajo } from './copia.js';
 import {
-  LADO, PLANTILLA, TRAZO, ENCUADRE_NEUTRO,
+  LADO, LADO_EXPORTACION, PLANTILLA, TRAZO, ENCUADRE_NEUTRO,
   calcularTransformacion, aplicarTransformacion,
   objetivoIzquierdo, objetivoDerecho
 } from './geometria.js';
@@ -22,6 +22,15 @@ const C = {
   hueco    : readToken('--err','#ff6b6b'),
   barbilla : readToken('--barbilla-medida','#4fc3f7')
 };
+
+/* Los previews se dibujan en el espacio de la plantilla, pero rotulan lo que
+   de verdad va a pesar el fichero. Se escribe aquí y no en el HTML para que
+   no se quede mintiendo cuando cambie el tamaño de salida. */
+(function rotularPreviews(){
+  const L = LADO_EXPORTACION;
+  if(els.pieCuadrado) els.pieCuadrado.textContent = `${L}x${L} CUADRADO`;
+  if(els.pieRedondo)  els.pieRedondo.textContent  = `${L}x${L} + MÁSCARA`;
+})();
 
 /* El lienzo intermedio se crea una vez y se reutiliza */
 let intermedio = null;

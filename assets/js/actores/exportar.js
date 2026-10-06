@@ -10,7 +10,10 @@
 ================================ */
 import { els } from './dom.js';
 import { estado } from './estado.js';
-import { LADO, ENCUADRE_NEUTRO, calcularTransformacion, aplicarTransformacion } from './geometria.js';
+import {
+  LADO, LADO_EXPORTACION, ENCUADRE_NEUTRO,
+  calcularTransformacion, aplicarTransformacion
+} from './geometria.js';
 import { resolverTodos } from './resolver.js';
 import { crearLienzo, cederControl, readToken, ErrorMemoriaLienzo } from '../utils.js';
 import { isCancelled, resetCancel } from '../cancel.js';
@@ -24,24 +27,31 @@ const CALIDAD = 1.0;
 
 const C = { hueco: readToken('--err','#ff6b6b') };
 
-/* AA-MM-DD, como en el ejemplo que dio el usuario: "RECORTES 800x800 23-12-16" */
+/* AA-MM-DD, como en el ejemplo que dio el usuario: "RECORTES 800x800 23-12-16".
+   La medida sale de la constante, no escrita a mano: si mañana se vuelve a
+   800, el nombre de la carpeta se entera solo. */
 function carpetaDeHoy(){
   const d = new Date();
   const dd = n => String(n).padStart(2,'0');
-  return `RECORTES 800x800 ${dd(d.getFullYear()%100)}-${dd(d.getMonth()+1)}-${dd(d.getDate())}`;
+  const L = LADO_EXPORTACION;
+  return `RECORTES ${L}x${L} ${dd(d.getFullYear()%100)}-${dd(d.getMonth()+1)}-${dd(d.getDate())}`;
 }
 
 function recortar(rec, lienzo){
   const { c, cx } = lienzo;
+  const L = LADO_EXPORTACION;
 
   cx.setTransform(1,0,0,1,0,0);
   cx.fillStyle = C.hueco;              // lo que la foto no cubra saldrá en rojo, no en negro
-  cx.fillRect(0,0,LADO,LADO);
+  cx.fillRect(0,0,L,L);
 
   const t = calcularTransformacion(rec.puntos, rec.barbilla, rec.encuadre || ENCUADRE_NEUTRO);
   if(!t) return null;
 
   cx.save();
+  /* La plantilla vive en un espacio de 800; el fichero puede salir a otro
+     tamaño. Se escala aquí, al final, y así la geometría no se entera. */
+  cx.scale(L/LADO, L/LADO);
   aplicarTransformacion(cx, t, 1);     // factor 1: se dibuja del original
   cx.imageSmoothingQuality = 'high';
   cx.drawImage(rec.img, 0, 0);
@@ -77,7 +87,7 @@ export async function exportarRecortes(){
      memoria por nada. */
   let lienzo;
   try{
-    lienzo = crearLienzo(LADO, LADO, 'preparar el lienzo de exportación');
+    lienzo = crearLienzo(LADO_EXPORTACION, LADO_EXPORTACION, 'preparar el lienzo de exportación');
   }catch(e){
     mostrarProgreso(false);
     await avisar({ titulo:'No se ha podido exportar', mensaje:e.message });

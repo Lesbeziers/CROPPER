@@ -246,14 +246,16 @@
         <div class="ac-previews">
           <figure class="ac-preview">
             <canvas id="acPreviewCuadrado" width="800" height="800"></canvas>
-            <!-- En mayúsculas escritas a mano, no con text-transform: eso
+            <!-- La medida la rellena el código desde LADO_EXPORTACION: escrita
+                 a mano quedaría mintiendo en cuanto cambiara el tamaño de
+                 salida. Las mayúsculas van a mano y no con text-transform, que
                  convertiría la equis de 800x800 en 800X800. -->
-            <figcaption>800x800 CUADRADO</figcaption>
+            <figcaption id="acPieCuadrado">CUADRADO</figcaption>
           </figure>
 
           <figure class="ac-preview ac-preview--redondo">
             <canvas id="acPreviewRedondo" width="800" height="800"></canvas>
-            <figcaption>800x800 + MÁSCARA</figcaption>
+            <figcaption id="acPieRedondo">+ MÁSCARA</figcaption>
           </figure>
         </div>
       </div>

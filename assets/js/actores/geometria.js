@@ -24,7 +24,17 @@
    los centros de las pupilas, y no 2 px más arriba.
 ================================ */
 
-export const LADO = 800;                 // el entregable es cuadrado
+/* El espacio en el que está definida la plantilla. NO se toca: los números de
+   abajo salieron del SVG medidos sobre un lienzo de 800. */
+export const LADO = 800;
+
+/* Lo que mide el fichero que se entrega. Es lo ÚNICO que hay que cambiar para
+   volver a 800: el recorte se revela a este tamaño escalando desde el espacio
+   de la plantilla, así que la geometría no se entera.
+
+   A 400 desde el 2026-10-01, mientras auditan el espacio en nube: miles de
+   imágenes al doble de lado pesan cuatro veces más. */
+export const LADO_EXPORTACION = 400;
 
 export const PLANTILLA = {
   ojosY           : 313.12,   // altura de los centros de las pupilas

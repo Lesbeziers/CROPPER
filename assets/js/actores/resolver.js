@@ -17,12 +17,20 @@
    una versión que lo guardaba entre sesiones, y el problema era justamente ése:
    un ID mal metido se quedaba pegado sin forma visible de cambiarlo.
 ================================ */
-import { buscarId } from './csv.js';
+import { buscarId, normalizar } from './csv.js';
 
 /* Devuelve, por cada imagen, o un ID con su procedencia, o el motivo por el
    que no lo hay. El motivo importa: «no está en el maestro» y «está dos veces»
    se resuelven igual pero se explican distinto. */
 export function resolver(rec){
+  /* Un nombre que son sólo cifras YA ES el ID: alguien lo ha puesto a mano en
+     lugar del nombre de la persona. Buscarlo en el listado no tendría sentido
+     —ahí hay nombres, no números— y además daría «no está» y mandaría a la
+     modal una imagen que no tiene ningún problema. Sale tal cual: 12345.jpg
+     se exporta como 12345.jpg. */
+  const comoNumero = normalizar(rec.name);
+  if(/^\d+$/.test(comoNumero)) return { rec, id:comoNumero, origen:'nombre' };
+
   const v = buscarId(rec.name);
   if(v.estado === 'encontrado') return { rec, id:v.id, origen:'maestro' };
 

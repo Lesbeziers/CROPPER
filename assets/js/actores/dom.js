@@ -63,6 +63,8 @@ export const els = {
   /* Previews de salida */
   previewCuadrado: document.getElementById('acPreviewCuadrado'),
   previewRedondo : document.getElementById('acPreviewRedondo'),
+  pieCuadrado    : document.getElementById('acPieCuadrado'),
+  pieRedondo     : document.getElementById('acPieRedondo'),
   guias          : document.getElementById('acGuias'),
 
   /* Visor del original */
