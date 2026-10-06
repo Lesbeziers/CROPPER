@@ -18,11 +18,20 @@
   Los ficheros viven en js/vendor/mediapipe/. Las rutas se resuelven contra la URL de
   ESTE módulo (import.meta.url), no contra la del HTML: así el modelo y el wasm se
   encuentran aunque el HTML cambie de sitio o de nombre.
+
+  El bundle se distribuye como .mjs y aquí se guarda como .js A PROPÓSITO. Un
+  `import()` sólo acepta la respuesta si el servidor la envía con un tipo MIME de
+  JavaScript, y no hay plan B: si no lo es, falla y no hay detección. Muchos
+  servidores corporativos no tienen .mjs en su tabla de tipos —IIS, de hecho,
+  devuelve 404 con las extensiones que no conoce—, y .js lo sirve absolutamente
+  todo. La extensión no cambia nada para el navegador; lo que cuenta es el MIME.
+  Así no hace falta tocar la configuración del servidor, que es justo lo que no
+  podemos hacer.
 */
 import { isCancelled } from '../cancel.js';
 import { crearLienzo, lienzoTieneContenido, ErrorMemoriaLienzo } from '../utils.js';
 
-const BUNDLE   = new URL('../vendor/mediapipe/vision_bundle.mjs',   import.meta.url).href;
+const BUNDLE   = new URL('../vendor/mediapipe/vision_bundle.js',    import.meta.url).href;
 const WASM_DIR = new URL('../vendor/mediapipe/wasm',                import.meta.url).href;
 const MODEL    = new URL('../vendor/mediapipe/face_landmarker.task', import.meta.url).href;
 
