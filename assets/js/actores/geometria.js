@@ -29,12 +29,15 @@
 export const LADO = 800;
 
 /* Lo que mide el fichero que se entrega. Es lo ÚNICO que hay que cambiar para
-   volver a 800: el recorte se revela a este tamaño escalando desde el espacio
-   de la plantilla, así que la geometría no se entera.
+   mover el tamaño de salida: el recorte se revela a esta medida escalando desde
+   el espacio de la plantilla, así que la geometría no se entera.
 
-   A 400 desde el 2026-10-01, mientras auditan el espacio en nube: miles de
-   imágenes al doble de lado pesan cuatro veces más. */
-export const LADO_EXPORTACION = 400;
+   De aquí salen también el nombre de la carpeta del ZIP, los rótulos bajo los
+   previews y el botón de la portada. Ninguno está escrito a mano.
+
+   Estuvo a 400 entre el 2026-10-01 y el 2026-10-07, mientras auditaban el
+   espacio en nube. Vuelve a 800, que es la medida buena. */
+export const LADO_EXPORTACION = 800;
 
 export const PLANTILLA = {
   ojosY           : 313.12,   // altura de los centros de las pupilas

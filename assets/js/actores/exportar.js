@@ -19,10 +19,14 @@ import { crearLienzo, cederControl, readToken, ErrorMemoriaLienzo } from '../uti
 import { isCancelled, resetCancel } from '../cancel.js';
 import { avisar } from '../modal.js';
 
-/* "máxima calidad posible", literal. Un 800x800 a 1.0 ronda los 300-400 KB
-   frente a los ~120 KB que ocuparía a 0.92, que a simple vista es idéntico.
-   Se deja en 1.0 porque así se pidió; cambiar este número es todo lo que hay
-   que tocar si algún día pesa demasiado. */
+/* "máxima calidad posible", literal.
+
+   MEDIDO, no estimado: a 1.0 un 800x800 pesa unos 780 KB y un 400x400 unos
+   214 KB. (Aquí había escrito un "300-400 KB" que me inventé sin comprobarlo.)
+
+   Se deja en 1.0 porque así se pidió. Si algún día vuelve a apretar el espacio
+   en nube, bajar esta cifra a 0.92 es lo primero que conviene probar antes que
+   recortar el lado: a simple vista es idéntico. */
 const CALIDAD = 1.0;
 
 const C = { hueco: readToken('--err','#ff6b6b') };
