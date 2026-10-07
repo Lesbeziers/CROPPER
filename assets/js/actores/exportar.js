@@ -24,9 +24,10 @@ import { avisar } from '../modal.js';
    MEDIDO, no estimado: a 1.0 un 800x800 pesa unos 780 KB y un 400x400 unos
    214 KB. (Aquí había escrito un "300-400 KB" que me inventé sin comprobarlo.)
 
-   Se deja en 1.0 porque así se pidió. Si algún día vuelve a apretar el espacio
-   en nube, bajar esta cifra a 0.92 es lo primero que conviene probar antes que
-   recortar el lado: a simple vista es idéntico. */
+   Se deja en 1.0 porque así se pidió, y **no hay ningún tamaño máximo pactado**:
+   nadie ha pedido nunca que un recorte pese menos de X. Si algún día lo piden,
+   esta constante es el primer sitio donde mirar — pero habrá que MEDIR cuánto
+   ahorra con sus fotos antes de prometer nada. */
 const CALIDAD = 1.0;
 
 const C = { hueco: readToken('--err','#ff6b6b') };
