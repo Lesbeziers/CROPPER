@@ -24,10 +24,17 @@ import { avisar } from '../modal.js';
    MEDIDO, no estimado: a 1.0 un 800x800 pesa unos 780 KB y un 400x400 unos
    214 KB. (Aquí había escrito un "300-400 KB" que me inventé sin comprobarlo.)
 
-   Se deja en 1.0 porque así se pidió, y **no hay ningún tamaño máximo pactado**:
-   nadie ha pedido nunca que un recorte pese menos de X. Si algún día lo piden,
-   esta constante es el primer sitio donde mirar — pero habrá que MEDIR cuánto
-   ahorra con sus fotos antes de prometer nada. */
+   NO HAY NINGÚN TAMAÑO MÁXIMO PACTADO, y este número NO es la palanca para
+   ahorrar disco. El criterio del equipo es explícito: el espacio es un problema
+   de ingeniería, y si falta se pide. La nitidez en pantallas de alta densidad no
+   depende de la capacidad que tenga contratada IT.
+
+   Es la foto oficial del descodificador: se recorta una vez y no se vuelve a
+   tocar nunca. Bajar la calidad sería cambiar un activo permanente por una línea
+   temporal de un presupuesto, sin vuelta atrás.
+
+   Así que si alguien vuelve a pedir que pesen menos, la respuesta por defecto es
+   pedir espacio, no tocar esto. */
 const CALIDAD = 1.0;
 
 const C = { hueco: readToken('--err','#ff6b6b') };
