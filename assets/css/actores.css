@@ -71,7 +71,10 @@
   min-height:0;overflow-y:auto;
   padding:16px;
   background:var(--mp-negro);
-  display:flex;flex-direction:column;gap:12px;
+  /* Sin hueco entre el rótulo y los previews a propósito: el aire del nombre
+     lo pone su propio centrado, y un gap fijo aquí se sumaría sólo por debajo
+     del texto, descentrándolo respecto al cuadrado. */
+  display:flex;flex-direction:column;gap:0;
 }
 
 /* ---- Botón de modo activo (EDICIÓN / VER TODO) ---- */
@@ -205,10 +208,16 @@
    tenerlo. */
 .ac-nombre{
   margin:0;
-  /* Se queda con todo el hueco que sobra por encima de los previews y centra
-     el texto dentro. Así el bloque respira lo mismo por arriba que por abajo
-     tanto si ocupa una línea como si ocupa dos: centrar el BLOQUE, no la
-     primera línea, era justamente lo pedido. */
+  /* Se coloca en el hueco que YA existe sobre los previews, sin quedárselo.
+     Del espacio sobrante se lleva un tercio y los previews dos, así que los
+     recortes siguen arriba y con su sitio: son el contenido, el nombre es el
+     rótulo. Hubo una versión que le daba al nombre TODO el sobrante y mandaba
+     el cuadrado y el círculo al fondo de la columna — se veía medio panel
+     vacío con un texto flotando.
+
+     Dentro de su banda el texto va centrado, así que una línea o dos dan el
+     mismo aire por arriba que por abajo: lo que se centra es el bloque, no la
+     primera línea. */
   flex:1 1 auto;
   display:flex;align-items:center;justify-content:center;
 
@@ -233,15 +242,17 @@
 /* ---- Los dos previews ----
    Se llevan todo el panel: son lo que de verdad hay que mirar. */
 .ac-previews{
-  /* Sólo lo que miden: el sobrante vertical se lo queda el nombre de arriba,
-     que es quien lo necesita para centrarse. */
-  flex:0 0 auto;min-height:0;
+  /* Dos tercios del sobrante vertical, contra uno del nombre: son lo que de
+     verdad hay que mirar y no deben bajar de sitio por un rótulo. */
+  flex:2 1 auto;min-height:0;
   display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:16px;
-  /* Lado a lado, el tamaño lo limita el ancho, no el alto: sobra hueco
-     vertical. Centrado reparte ese sobrante arriba y abajo en vez de
-     amontonar los previews contra el techo. */
-  align-content:center;
+  /* Pegados al techo de su banda, NO centrados. Centrados se dejaban aire por
+     encima del cuadrado, y ese aire contaba como "debajo del nombre": el
+     rótulo salía descentrado respecto a lo que tiene debajo por mucho que
+     estuviera centrado en su propia caja. El sobrante se va abajo, donde no
+     estorba. */
+  align-content:start;
 }
 .ac-preview{margin:0;display:flex;flex-direction:column;gap:7px;min-width:0}
 .ac-preview canvas{
