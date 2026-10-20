@@ -61,6 +61,7 @@ export const els = {
   reset     : document.getElementById('acReset'),
 
   /* Previews de salida */
+  nombre         : document.getElementById('acNombre'),
   previewCuadrado: document.getElementById('acPreviewCuadrado'),
   previewRedondo : document.getElementById('acPreviewRedondo'),
   pieCuadrado    : document.getElementById('acPieCuadrado'),

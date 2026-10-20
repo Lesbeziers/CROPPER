@@ -62,9 +62,18 @@ function cambiarForma(redonda){
   els.formaCuadrado.classList.toggle('activo', !redonda);
 }
 
+/* El lote TIENE principio y final: en la última, SIGUIENTE no hace nada, y en
+   la primera tampoco ANTERIOR. Antes daba la vuelta, y repasar un lote era no
+   saber nunca si ya habías terminado — volvías a la primera sin aviso y la
+   revisabas otra vez.
+
+   El corte va aquí y no en los botones a propósito: por esta función pasan
+   también la tecla ENTER, el clic en la lista y la parrilla de VER TODO. Un
+   solo sitio, y ninguna vía se queda fuera. */
 function irA(i){
   if(!estado.imagenes.length) return;
-  estado.idx = (i + estado.imagenes.length) % estado.imagenes.length;
+  if(i < 0 || i >= estado.imagenes.length) return;
+  estado.idx = i;
   pintar();
   pintarPreviews();
   refrescarLista();

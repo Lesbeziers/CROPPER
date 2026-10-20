@@ -192,6 +192,28 @@
 }
 #app-actores .acciones .btn:disabled:hover{background:var(--ui-btn);color:var(--mp-gris-texto)}
 
+/* ---- El nombre de quien se está recortando ----
+
+   NO se recorta con puntos suspensivos. Un nombre a medias es peor que
+   ninguno: este panel sirve justamente para repasar que cada cara va con su
+   ficha, y los nombres compuestos son largos de verdad ("Ashley Bashey Thomas"
+   fue el caso con el que se midió). Se encoge con el ancho del panel y, si aun
+   así no cabe, parte de línea; los previews ceden el hueco porque van
+   centrados verticalmente.
+
+   El alto mínimo evita que la fila dé un salto al pasar de no tener nombre a
+   tenerlo. */
+.ac-nombre{
+  margin:0;
+  font-weight:300;                          /* Apercu Light, como el montaje */
+  font-size:clamp(1.05rem, 2.3vw, 1.9rem);
+  line-height:1.15;
+  min-height:1.15em;
+  color:var(--mp-ambar);
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+
 /* ---- Los dos previews ----
    Se llevan todo el panel: son lo que de verdad hay que mirar. */
 .ac-previews{

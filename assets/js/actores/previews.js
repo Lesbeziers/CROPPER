@@ -32,6 +32,16 @@ const C = {
   if(els.pieRedondo)  els.pieRedondo.textContent  = `${L}x${L} + MÁSCARA`;
 })();
 
+/* Quién se está recortando. Se le quita la extensión, igual que en las
+   miniaturas de VER TODO: ".jpg" no es parte del nombre de nadie. El nombre
+   completo del fichero se queda en el title, por si alguna vez hace falta
+   distinguir dos ficheros parecidos. */
+function rotularNombre(rec){
+  if(!els.nombre) return;
+  els.nombre.textContent = rec ? rec.name.replace(/\.[^.]+$/, '') : '';
+  els.nombre.title       = rec ? rec.name : '';
+}
+
 /* El lienzo intermedio se crea una vez y se reutiliza */
 let intermedio = null;
 function lienzoIntermedio(){
@@ -148,6 +158,7 @@ function pintarBarbilla(cx, rec, t, factor){
 
 export function pintarPreviews(){
   const rec = actual();
+  rotularNombre(rec);
 
   if(!rec || rec.puntos?.length !== 2){
     pintarVacio();

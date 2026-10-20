@@ -20,13 +20,23 @@ export function refrescarMandos(){
   /* ---- Sin imágenes: sólo PORTADA ---- */
   const sueltos = [
     els.reiniciar, els.edicion, els.verTodo,      // barra de acciones
-    els.prev, els.next,                            // navegación
     els.ajustar, els.vista100,                     // barra del visor
     els.zoomIn, els.zoomOut, els.limpiar,
     els.guias,                                     // interruptor de guías
     els.formaCuadrado, els.formaCirculo            // forma en VER TODO
   ];
   sueltos.forEach(b => { if(b) b.disabled = !hayProyecto; });
+
+  /* ---- Navegación: el lote tiene principio y final ----
+     Ya no da la vuelta (ver irA en modos/actores-800.js), así que los botones
+     lo tienen que decir. Un SIGUIENTE encendido en la última imagen es una
+     promesa que no se cumple, y repasando un lote largo es justo cuando hace
+     falta saber que has llegado al final.
+
+     Con una sola imagen los dos se apagan, que es lo correcto: no hay a dónde
+     ir en ninguna dirección. */
+  els.prev.disabled = !hayProyecto || estado.idx <= 0;
+  els.next.disabled = !hayProyecto || estado.idx >= estado.imagenes.length - 1;
 
   /* ---- Encuadre: además hacen falta las dos pupilas ---- */
   const utilizable = hayProyecto && !!rec?.puntos && rec.puntos.length === 2 && !estado.detectando;
