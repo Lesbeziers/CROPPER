@@ -122,6 +122,12 @@ function centroActual(){
 export function ajustarImagen(){
   const c = actual(); if(!c) return;
   const { ancho, alto } = hueco();
+
+  /* Con el visor oculto —en VER TODO— medirlo da cero, y el zoom saldría cero:
+     la imagen quedaría invisible al volver a EDICIÓN. Se repinta y se deja el
+     encuadre como estaba; quien vuelva a mostrar el visor ya lo ajustará. */
+  if(!ancho || !alto){ pintar(); return; }
+
   estado.vista.zoom = Math.min(ancho/c.width, alto/c.height);
   ajustarEspacio();
   sincronizarConElScroll();

@@ -74,7 +74,16 @@ function irA(i){
   if(!estado.imagenes.length) return;
   if(i < 0 || i >= estado.imagenes.length) return;
   estado.idx = i;
-  pintar();
+
+  /* Cada imagen entra encuadrada entera, no heredando el zoom de la anterior.
+     El zoom vive en el estado general, no en cada foto, así que al pasar de
+     una de 1443x2048 a una de 3334x5000 te quedabas mirando un trozo —a veces
+     sin la cara dentro— y había que pulsar AJUSTAR a mano para poder colocar
+     las pupilas. El modo de carátulas ya recolocaba la vista en cada imagen;
+     éste no, y la diferencia sólo se notaba con lotes de tamaños dispares.
+
+     ajustarImagen() repinta por dentro, de ahí que aquí ya no haga falta. */
+  ajustarImagen();
   pintarPreviews();
   refrescarLista();
   refrescarMandos();
