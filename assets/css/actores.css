@@ -205,19 +205,37 @@
    tenerlo. */
 .ac-nombre{
   margin:0;
+  /* Se queda con todo el hueco que sobra por encima de los previews y centra
+     el texto dentro. Así el bloque respira lo mismo por arriba que por abajo
+     tanto si ocupa una línea como si ocupa dos: centrar el BLOQUE, no la
+     primera línea, era justamente lo pedido. */
+  flex:1 1 auto;
+  display:flex;align-items:center;justify-content:center;
+
   font-weight:300;                          /* Apercu Light, como el montaje */
-  font-size:clamp(1.05rem, 2.3vw, 1.9rem);
+  font-size:clamp(1.15rem, 2.8vw, 2.4rem);
   line-height:1.15;
-  min-height:1.15em;
   color:var(--mp-ambar);
   text-align:center;
   overflow-wrap:anywhere;
 }
 
+/* El hueco del nombre es lo que sobra por encima de los previews, y los
+   previews miden lo que mide el ancho del panel: en una ventana baja ese
+   sobrante se queda en nada y un nombre de dos líneas empujaría los recortes
+   fuera de la vista. Ahí el nombre cede, que para eso es el rótulo y no el
+   contenido. No se puede resolver con vh a secas — el espacio disponible
+   depende del ancho, no del alto. */
+@media (max-height:660px){
+  .ac-nombre{ font-size:clamp(1rem, 2.1vw, 1.6rem); }
+}
+
 /* ---- Los dos previews ----
    Se llevan todo el panel: son lo que de verdad hay que mirar. */
 .ac-previews{
-  flex:1;min-height:0;
+  /* Sólo lo que miden: el sobrante vertical se lo queda el nombre de arriba,
+     que es quien lo necesita para centrarse. */
+  flex:0 0 auto;min-height:0;
   display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:16px;
   /* Lado a lado, el tamaño lo limita el ancho, no el alto: sobra hueco
